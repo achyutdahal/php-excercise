@@ -13,3 +13,7 @@
 
 Route::get('/', 'ProjectUploadController@index');
 Route::post('upload', 'ProjectUploadController@upload')->name('upload');
+
+
+Route::get('/projects', 'ProjectController@index');
+Route::get('/project/projectId', 'ProjectController@project');
