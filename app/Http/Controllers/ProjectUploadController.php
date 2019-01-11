@@ -3,11 +3,12 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Project;
 
 class ProjectUploadController extends Controller {
 
     /**
-     * Page to display the html form for the xml upload
+     * Page to display the HTML form for the XML upload
      * @return View
      */
     public function index() {
@@ -15,24 +16,27 @@ class ProjectUploadController extends Controller {
     }
 
     /**
-     * R
+     * Uploads an XML file for a project and persists on the database
      * @param Request $request
      */
     public function upload(Request $request) {
-        
-        $validatedData = $request->validate([
-            'projectxml' => 'required',
-        ]);
-        
-       
-        $path = $request->file('projectxml');
-        $pathInfo = $path->path();
-        $xml = simplexml_load_file($pathInfo);
-        foreach ($xml->project as $item) {
-            \App\Project::updateOrCreate(['name' => $item->name], ['description' => addslashes($item->description)]);
+        try {
+            $request->validate([
+                'projectxml' => 'required|mimes:application/xml',
+            ]);
+            $path = $request->file('projectxml');
+            $pathInfo = $path->path();
+            
+            $projectObj = new Project;
+            $projectObj->createProjectsFromFile($pathInfo);
+            
+            \Illuminate\Support\Facades\Session::flash('success', 'Saved all the projects');
+            return redirect('/');
+        } catch (\Exception $ex) {
+            \Illuminate\Support\Facades\Session::flash('error', 'Something went wrong. Please try again');
+            Log::info('UploadError ' . $ex->getMessage());
+            return redirect('/');
         }
-        \Illuminate\Support\Facades\Session::flash('success', 'Saved all the projects'); 
-        return redirect('/');
     }
 
 }
