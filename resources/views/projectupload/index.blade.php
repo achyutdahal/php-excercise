@@ -8,6 +8,11 @@
                 <div class="card-header">File Upload</div>
                 <div class="card-body">
                     <form method="POST" enctype='multipart/form-data' action="{{ route('upload') }}" >
+                        
+                        @foreach ($errors->all() as $error)
+                        <div class='alert alert-danger'> {{ $error }}</div>
+                        @endforeach
+                        
                         @csrf
                         <div class="form-group row">
                             <label for="title" class="col-sm-4 col-form-label text-md-right">Project File</label>
