@@ -17,7 +17,7 @@
                         <div class="form-group row">
                             <label for="title" class="col-sm-4 col-form-label text-md-right">Project File</label>
                             <br>
-                            <input type="file" name="projectxml"/>
+                            <input type="file" name="projectxml" required/>
                         </div>
 
                         <div class="form-group row mb-0">

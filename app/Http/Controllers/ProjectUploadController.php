@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Project;
+use Illuminate\Support\Facades\Log;
+use App\XmlUploader;
 
 class ProjectUploadController extends Controller {
 
@@ -22,14 +24,17 @@ class ProjectUploadController extends Controller {
     public function upload(Request $request) {
         try {
             $request->validate([
-                'projectxml' => 'required|mimes:application/xml',
+                'projectxml' => 'required',
             ]);
-            $path = $request->file('projectxml');
-            $pathInfo = $path->path();
-            
+            $xmlUploaderService = new XmlUploader();
+            $path = $xmlUploaderService->upload($request);
+            if (!$path) {
+                \Illuminate\Support\Facades\Session::flash('error', 'Please upload xml file.');
+                return redirect('/');
+            }
             $projectObj = new Project;
-            $projectObj->createProjectsFromFile($pathInfo);
-            
+            $projectObj->createProjectsFromFile($path);
+
             \Illuminate\Support\Facades\Session::flash('success', 'Saved all the projects');
             return redirect('/');
         } catch (\Exception $ex) {
